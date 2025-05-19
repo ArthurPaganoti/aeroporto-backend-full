@@ -3,6 +3,11 @@ const Gate = require('../models/Gate');
 // criar portão
 exports.create = async (req, res) => {
   try {
+    // Verifica se já existe um portão com o mesmo código
+    const exists = await Gate.findOne({ codigo: req.body.codigo });
+    if (exists) {
+      return res.status(400).json({ error: 'Já existe um portão com esse código.' });
+    }
     const gate = new Gate(req.body);
     await gate.save();
     res.status(201).json(gate);

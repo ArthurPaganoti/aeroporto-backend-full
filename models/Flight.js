@@ -3,8 +3,8 @@ const flightSchema = new mongoose.Schema({
   numeroVoo: { type: String, required: true, unique: true },
   origem: { type: String, required: true },
   destino: { type: String, required: true },
-  dataHoraPartida: { type: Date, required: true },
-  gateId: { type: mongoose.Schema.Types.ObjectId, ref: 'Gate' },
+  dataHoraPartida: { typae: Date, required: true },
+  gateId: { type: mongoose.Schema.Types.ObjectId, ref: 'Gate', required: true },
   status: { type: String, enum: ['programado', 'embarque', 'concluído'], default: 'programado' }
 });
 
