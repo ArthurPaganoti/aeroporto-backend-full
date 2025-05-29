@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Flight = require('../models/Flight');
 const Passenger = require('../models/Passenger');
+const { authMiddleware, adminMiddleware } = require('../middlewares/authMiddleware');
 
-router.get('/daily', async (req, res) => {
+// Rota protegida para gerar relatório diário (apenas administradores)
+router.get('/daily', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     // Define o intervalo de tempo para o dia atual
     const start = new Date();
@@ -14,7 +16,7 @@ router.get('/daily', async (req, res) => {
     // Busca todos os voos programados para o dia atual
     const flights = await Flight.find({ dataHoraPartida: { $gte: start, $lte: end } }).populate('gateId');
 
-    if (flights.length === 0) {
+    if (!flights || flights.length === 0) {
       return res.status(404).json({ error: 'Nenhum voo programado para o dia atual.' });
     }
 
@@ -41,7 +43,7 @@ router.get('/daily', async (req, res) => {
 
     res.json(report);
   } catch (err) {
-    console.error(err);
+    console.error('Erro ao gerar o relatório:', err.message);
     res.status(500).json({ error: 'Erro ao gerar o relatório.' });
   }
 });
